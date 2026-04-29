@@ -43,16 +43,13 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Email уже зарегистрирован")
     
     hashed_password = auth.get_password_hash(user.password)
-    # Первый зарегистрированный пользователь пусть будет менеджером для тестов
-    is_first_user = db.query(models.User).count() == 0
-    role = "manager" if is_first_user else "client"
     
     db_user = models.User(
         email=user.email,
         hashed_password=hashed_password,
         full_name=user.full_name,
         phone=user.phone,
-        role=role
+        role="client"
     )
     db.add(db_user)
     db.commit()
@@ -115,11 +112,19 @@ def create_order(order: schemas.OrderCreate, db: Session = Depends(get_db), curr
     tour = db.query(models.Tour).filter(models.Tour.id == order.tour_id).first()
     if not tour or not tour.is_active:
         raise HTTPException(status_code=404, detail="Тур не найден или неактивен")
+    if order.people_count < 1:
+        raise HTTPException(status_code=400, detail="Неверное количество человек")
+    if tour.capacity < order.people_count:
+        raise HTTPException(status_code=400, detail="Недостаточно мест")
+
+    # Уменьшаем доступное количество мест
+    tour.capacity -= order.people_count
     
     db_order = models.Order(
         user_id=current_user.id,
         tour_id=order.tour_id,
-        fixed_price=tour.price
+        people_count=order.people_count,
+        fixed_price=tour.price * order.people_count
     )
     db.add(db_order)
     db.commit()
@@ -146,3 +151,9 @@ def update_order_status(order_id: int, status_update: schemas.OrderStatusUpdate,
     db.commit()
     db.refresh(db_order)
     return db_order
+
+# --- Маршруты Администратора ---
+@app.get("/api/admin/users", response_model=List[schemas.UserWithOrdersResponse])
+def get_all_users_with_orders(db: Session = Depends(get_db), current_manager: models.User = Depends(auth.get_current_manager)):
+    users = db.query(models.User).all()
+    return users

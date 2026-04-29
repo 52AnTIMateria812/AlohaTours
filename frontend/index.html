@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AlohaTours - Windows Vista Edition</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/frontend/style.css?v=11">
     <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -24,11 +24,12 @@
             </div>
             <div class="auth-panel" id="user-section" style="display: none;">
                 <span id="user-name" class="glow-text"></span>
+                <button class="aero-btn primary" id="admin-btn" style="display: none;" onclick="showAdminPanel()">Админка</button>
                 <button class="aero-btn" onclick="logout()">Выход</button>
             </div>
         </header>
 
-        <main class="window-content">
+        <main class="window-content" id="main-content">
             <div class="toolbar aero-glass-light">
                 <h2>Каталог туров</h2>
                 <div class="filters">
@@ -41,6 +42,19 @@
             </div>
         </main>
         
+        <main class="window-content" id="admin-content" style="display: none;">
+            <div class="toolbar aero-glass-light">
+                <h2>Панель Администратора</h2>
+                <button class="aero-btn" onclick="hideAdminPanel()">Назад в каталог</button>
+            </div>
+            <div class="admin-panel">
+                <h3>Зарегистрированные пользователи и заказы</h3>
+                <div id="admin-users-container">
+                    <!-- Таблица юзеров -->
+                </div>
+            </div>
+        </main>
+
         <footer class="aero-footer">
             <p>AlohaTours © 2007 - 2026. Vaporwave & Vista Edition.</p>
         </footer>
@@ -50,8 +64,12 @@
     <div id="loginModal" class="modal">
         <div class="modal-content aero-glass">
             <div class="modal-header">
+                <div class="window-controls">
+                    <div class="control close" onclick="closeModals()" style="cursor:pointer;"></div>
+                    <div class="control minimize"></div>
+                    <div class="control maximize"></div>
+                </div>
                 <h2>Вход в систему</h2>
-                <span class="close-modal" onclick="closeModals()">×</span>
             </div>
             <div class="modal-body">
                 <input type="email" id="loginEmail" class="aero-input" placeholder="Email">
@@ -67,8 +85,12 @@
     <div id="registerModal" class="modal">
         <div class="modal-content aero-glass">
             <div class="modal-header">
+                <div class="window-controls">
+                    <div class="control close" onclick="closeModals()" style="cursor:pointer;"></div>
+                    <div class="control minimize"></div>
+                    <div class="control maximize"></div>
+                </div>
                 <h2>Регистрация</h2>
-                <span class="close-modal" onclick="closeModals()">×</span>
             </div>
             <div class="modal-body">
                 <input type="text" id="regName" class="aero-input" placeholder="ФИО">
@@ -81,6 +103,55 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Стилизованное окно необходимости регистрации -->
+    <div id="authRequiredModal" class="modal">
+        <div class="modal-content aero-glass">
+            <div class="modal-header">
+                <div class="window-controls">
+                    <div class="control close" onclick="closeModals()" style="cursor:pointer;"></div>
+                    <div class="control minimize"></div>
+                    <div class="control maximize"></div>
+                </div>
+                <h2>Внимание</h2>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <p>Для бронирования тура вам необходимо войти в систему или зарегистрироваться!</p>
+                <div class="modal-actions" style="justify-content: center; gap: 10px; margin-top: 20px;">
+                    <button class="aero-btn primary" onclick="closeModals(); showLogin();">Войти</button>
+                    <button class="aero-btn" onclick="closeModals(); showRegister();">Регистрация</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно Бронирования -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content aero-glass" style="width: 400px;">
+            <div class="modal-header">
+                <div class="window-controls">
+                    <div class="control close" onclick="closeModals()" style="cursor:pointer;"></div>
+                    <div class="control minimize"></div>
+                    <div class="control maximize"></div>
+                </div>
+                <h2>Оформление бронирования</h2>
+            </div>
+            <div class="modal-body">
+                <h3 id="book-tour-title" style="margin-top:0; color:#1a5b82;"></h3>
+                <p>Базовая цена: <strong id="book-tour-price"></strong></p>
+                <label for="book-people">Количество человек:</label>
+                <input type="number" id="book-people" class="aero-input" value="1" min="1" oninput="updateBookingPrice()">
+                
+                <div style="margin-top: 15px; font-size: 1.2em; border-top: 1px solid #ccc; padding-top: 10px;">
+                    Итого к оплате: <strong id="book-total-price" style="color: #2e8b57;"></strong>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="aero-btn primary" onclick="confirmBooking()">Подтвердить бронь</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/frontend/script.js?v=11"></script>
 </body>
 </html>

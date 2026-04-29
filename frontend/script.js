@@ -1,15 +1,36 @@
 const API_URL = 'http://127.0.0.1:8000/api';
 let token = localStorage.getItem('token');
-let allTours = []; // Для клиентской фильтрации
+let allTours = [];
+let currentBookingTour = null;
+
+function parseJwt (token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch(e) { return null; }
+}
 
 function updateAuthUI() {
+    const adminBtn = document.getElementById('admin-btn');
     if (token) {
         document.getElementById('auth-section').style.display = 'none';
         document.getElementById('user-section').style.display = 'flex';
         document.getElementById('user-name').innerText = "Вы вошли";
+        
+        const payload = parseJwt(token);
+        if (payload && payload.role === 'manager') {
+            adminBtn.style.display = 'block';
+        } else {
+            adminBtn.style.display = 'none';
+        }
     } else {
         document.getElementById('auth-section').style.display = 'block';
         document.getElementById('user-section').style.display = 'none';
+        adminBtn.style.display = 'none';
     }
 }
 
@@ -28,21 +49,26 @@ function renderTours(tours) {
     container.innerHTML = '';
     
     if (tours.length === 0) {
-        container.innerHTML = '<p style="padding: 20px;">Туров не найдено. Попробуйте изменить фильтр.</p>';
+        container.innerHTML = '<p style="padding: 20px;">Туров не найдено.</p>';
         return;
     }
 
     tours.forEach(tour => {
         const card = document.createElement('div');
         card.className = 'tour-card aero-glass-light';
+        const imgHtml = tour.image_url ? `<img class="tour-img" src="${tour.image_url}" alt="${tour.title}">` : '';
+        
         card.innerHTML = `
-            <h3>${tour.title}</h3>
-            <p><strong>Страна:</strong> ${tour.country}</p>
-            <p style="font-size: 0.9em; color: #555; flex: 1;">${tour.description}</p>
-            <p style="font-size: 0.85em;"><strong>Даты:</strong> ${tour.start_date} - ${tour.end_date}</p>
-            <p style="font-size: 0.85em;">Осталось мест: ${tour.capacity}</p>
-            <p class="price">$${tour.price}</p>
-            <button class="aero-btn primary" onclick="bookTour(${tour.id})" ${!token ? 'disabled title="Войдите для бронирования"' : ''}>Забронировать</button>
+            ${imgHtml}
+            <div class="tour-info">
+                <h3>${tour.title}</h3>
+                <p><strong>Страна:</strong> ${tour.country}</p>
+                <p style="font-size: 0.9em; color: #555;">${tour.description}</p>
+                <p style="font-size: 0.85em;"><strong>Даты:</strong> ${tour.start_date} - ${tour.end_date}</p>
+                <p style="font-size: 0.85em;">Мест: ${tour.capacity}</p>
+                <p class="price">$${tour.price}</p>
+                <button class="aero-btn primary" onclick='openBookingModal(${tour.id})'>Забронировать</button>
+            </div>
         `;
         container.appendChild(card);
     });
@@ -60,14 +86,12 @@ function filterTours() {
 function showLogin() { document.getElementById('loginModal').style.display = 'flex'; }
 function showRegister() { document.getElementById('registerModal').style.display = 'flex'; }
 function closeModals() { 
-    document.getElementById('loginModal').style.display = 'none'; 
-    document.getElementById('registerModal').style.display = 'none'; 
+    document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
 }
 
 async function login() {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
-    
     const formData = new URLSearchParams();
     formData.append('username', email);
     formData.append('password', password);
@@ -84,8 +108,7 @@ async function login() {
         localStorage.setItem('token', token);
         closeModals();
         updateAuthUI();
-        loadTours(); // обновляем туры для активации кнопок
-        alert("Успешный вход!");
+        loadTours();
     } else {
         alert("Ошибка входа! Проверьте данные.");
     }
@@ -103,11 +126,20 @@ async function register() {
     });
 
     if (res.ok) {
-        alert("Регистрация успешна! Теперь вы можете войти.");
+        alert("Регистрация успешна! Теперь войдите.");
         closeModals();
         showLogin();
     } else {
-        alert("Ошибка регистрации!");
+        const errorData = await res.json();
+        let errorMsg = "Ошибка регистрации!";
+        if (errorData.detail) {
+            if (Array.isArray(errorData.detail)) {
+                errorMsg = errorData.detail.map(e => e.msg).join(", ");
+            } else {
+                errorMsg = errorData.detail;
+            }
+        }
+        alert(errorMsg);
     }
 }
 
@@ -116,27 +148,97 @@ function logout() {
     localStorage.removeItem('token');
     updateAuthUI();
     loadTours();
+    hideAdminPanel();
 }
 
-async function bookTour(tourId) {
-    if (!token) return alert("Пожалуйста, авторизуйтесь");
+// Бронирование
+function openBookingModal(tourId) {
+    if (!token) {
+        document.getElementById('authRequiredModal').style.display = 'flex';
+        return;
+    }
+    const tour = allTours.find(t => t.id === tourId);
+    if (!tour) return;
     
+    currentBookingTour = tour;
+    document.getElementById('book-tour-title').innerText = tour.title;
+    document.getElementById('book-tour-price').innerText = `$${tour.price}`;
+    document.getElementById('book-people').value = 1;
+    document.getElementById('book-people').max = tour.capacity;
+    updateBookingPrice();
+    document.getElementById('bookingModal').style.display = 'flex';
+}
+
+function updateBookingPrice() {
+    if (!currentBookingTour) return;
+    const count = parseInt(document.getElementById('book-people').value) || 1;
+    const total = count * currentBookingTour.price;
+    document.getElementById('book-total-price').innerText = `$${total.toFixed(2)}`;
+}
+
+async function confirmBooking() {
+    const count = parseInt(document.getElementById('book-people').value) || 1;
+    
+    if (count > currentBookingTour.capacity) {
+        return alert("Недостаточно мест!");
+    }
+
     const res = await fetch(`${API_URL}/orders/`, {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ tour_id: tourId })
+        body: JSON.stringify({ tour_id: currentBookingTour.id, people_count: count })
     });
 
     if (res.ok) {
-        alert("Тур успешно забронирован! Спасибо.");
+        alert("Успешно забронировано!");
+        closeModals();
+        loadTours();
     } else {
-        alert("Ошибка бронирования");
+        const err = await res.json();
+        alert("Ошибка: " + (err.detail || "Не удалось забронировать"));
     }
 }
 
-// Инициализация
+// Админ панель
+async function showAdminPanel() {
+    document.getElementById('main-content').style.display = 'none';
+    document.getElementById('admin-content').style.display = 'flex';
+    
+    try {
+        const res = await fetch(`${API_URL}/admin/users`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error("Нет доступа");
+        const users = await res.json();
+        
+        const container = document.getElementById('admin-users-container');
+        let html = '<table class="admin-table"><tr><th>ФИО</th><th>Email</th><th>Роль</th><th>Заказы</th></tr>';
+        
+        users.forEach(u => {
+            let ordersHtml = u.orders.map(o => `Тур #${o.tour_id} (${o.people_count} чел.) - $${o.fixed_price} [${o.status}]`).join('<br>');
+            if (!ordersHtml) ordersHtml = "Нет заказов";
+            html += `<tr>
+                <td>${u.full_name}</td>
+                <td>${u.email}</td>
+                <td>${u.role}</td>
+                <td style="font-size:0.85em;">${ordersHtml}</td>
+            </tr>`;
+        });
+        html += '</table>';
+        container.innerHTML = html;
+        
+    } catch (e) {
+        alert("Ошибка загрузки данных администратора");
+    }
+}
+
+function hideAdminPanel() {
+    document.getElementById('main-content').style.display = 'flex';
+    document.getElementById('admin-content').style.display = 'none';
+}
+
 updateAuthUI();
 loadTours();

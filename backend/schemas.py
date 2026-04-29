@@ -30,6 +30,7 @@ class TourBase(BaseModel):
     end_date: date
     capacity: int
     is_active: bool = True
+    image_url: Optional[str] = None
 
 class TourCreate(TourBase):
     pass
@@ -43,6 +44,7 @@ class TourUpdate(BaseModel):
     end_date: Optional[date] = None
     capacity: Optional[int] = None
     is_active: Optional[bool] = None
+    image_url: Optional[str] = None
 
 class TourResponse(TourBase):
     id: int
@@ -53,6 +55,7 @@ class TourResponse(TourBase):
 # --- Заявки (Бронирования) ---
 class OrderCreate(BaseModel):
     tour_id: int
+    people_count: int = 1
 
 class OrderStatusUpdate(BaseModel):
     status: str
@@ -61,11 +64,19 @@ class OrderResponse(BaseModel):
     id: int
     user_id: int
     tour_id: int
+    people_count: int
     status: str
     order_date: datetime
     fixed_price: Optional[Decimal]
     
     tour: Optional[TourResponse] = None
+
+    class Config:
+        from_attributes = True
+
+# --- Админские схемы (Пользователи + их заявки) ---
+class UserWithOrdersResponse(UserResponse):
+    orders: List[OrderResponse] = []
 
     class Config:
         from_attributes = True

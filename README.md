@@ -38,12 +38,17 @@ AlohaTours — это веб-система для управления тури
 2. **Tour (Тур):** Информация о путевке.
 3. **Order (Заявка):** Связь пользователя и тура.
 
-## Как запустить проект локально?
+## Запуск
+1. Создать виртуальное окружение: `python -m venv venv`
+2. Активировать: `venv\Scripts\activate` (Windows)
+3. Установить зависимости: `pip install -r requirements.txt`
+4. Заполнить базу данных: `python seed.py`
+5. Запустить бэкенд: `uvicorn backend.main:app --reload`
+6. Открыть `http://127.0.0.1:8000/` в браузере.
 
-1. Склонируйте репозиторий.
-2. Создайте виртуальное окружение: `python -m venv venv`
-3. Активируйте его: `venv\Scripts\activate` (Windows)
-4. Установите зависимости: `pip install fastapi uvicorn sqlalchemy passlib[bcrypt] python-jose python-multipart pydantic-settings`
-5. **Наполните БД реальными турами:** `python seed.py`
-6. Запустите сервер: `uvicorn backend.main:app --reload`
-7. Откройте браузер по адресу: `http://127.0.0.1:8000/`
+## Учетная запись Администратора
+После выполнения `seed.py` в базе данных автоматически создается администратор:
+- **Email:** `admin@alohatours.com`
+- **Пароль:** `admin`
+
+## Дальнейшие шаги (Этап 3)
