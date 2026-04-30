@@ -157,3 +157,51 @@ def update_order_status(order_id: int, status_update: schemas.OrderStatusUpdate,
 def get_all_users_with_orders(db: Session = Depends(get_db), current_manager: models.User = Depends(auth.get_current_manager)):
     users = db.query(models.User).all()
     return users
+
+# --- Маршруты Недвижимости (Этап 3) ---
+@app.get("/api/properties/", response_model=List[schemas.PropertyResponse])
+def get_active_properties(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    properties = db.query(models.Property).filter(models.Property.is_active == True).offset(skip).limit(limit).all()
+    return properties
+
+@app.get("/api/properties/{property_id}", response_model=schemas.PropertyResponse)
+def get_property(property_id: int, db: Session = Depends(get_db)):
+    property_item = db.query(models.Property).filter(models.Property.id == property_id, models.Property.is_active == True).first()
+    if property_item is None:
+        raise HTTPException(status_code=404, detail="Недвижимость не найдена")
+    return property_item
+
+@app.post("/api/property_orders/", response_model=schemas.PropertyOrderResponse)
+def create_property_order(order: schemas.PropertyOrderCreate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
+    property_item = db.query(models.Property).filter(models.Property.id == order.property_id).first()
+    if not property_item or not property_item.is_active:
+        raise HTTPException(status_code=404, detail="Недвижимость не найдена или недоступна")
+    
+    if order.people_count < 1:
+        raise HTTPException(status_code=400, detail="Неверное количество человек")
+    if property_item.capacity < order.people_count:
+        raise HTTPException(status_code=400, detail="Недостаточно мест (превышена вместимость)")
+    
+    nights = (order.end_date - order.start_date).days
+    if nights <= 0:
+        raise HTTPException(status_code=400, detail="Дата выезда должна быть позже даты заезда")
+
+    total_price = property_item.price_per_night * nights
+
+    db_order = models.PropertyOrder(
+        user_id=current_user.id,
+        property_id=order.property_id,
+        start_date=order.start_date,
+        end_date=order.end_date,
+        people_count=order.people_count,
+        total_price=total_price
+    )
+    db.add(db_order)
+    db.commit()
+    db.refresh(db_order)
+    return db_order
+
+@app.get("/api/property_orders/my", response_model=List[schemas.PropertyOrderResponse])
+def get_my_property_orders(db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
+    orders = db.query(models.PropertyOrder).filter(models.PropertyOrder.user_id == current_user.id).all()
+    return orders

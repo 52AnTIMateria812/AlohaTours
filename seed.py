@@ -68,8 +68,37 @@ def seed_tours(db: Session):
     for tour in tours:
         db.add(tour)
     
+    properties = [
+        models.Property(
+            title="Вилла Sunset Mirage",
+            location="Малибу, Калифорния",
+            description="Шикарная вилла на побережье Тихого океана. Панорамные окна, собственный бассейн и выход на закрытый пляж. Идеально для эстетичного отдыха в стиле Vaporwave.",
+            price_per_night=550.00,
+            capacity=6,
+            image_url="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
+        ),
+        models.Property(
+            title="Пентхаус Neon Lights",
+            location="Токио, Япония",
+            description="Двухуровневый пентхаус с видом на Сибуя. Окунитесь в атмосферу киберпанка: неоновая подсветка, умный дом и джакузи на крыше.",
+            price_per_night=320.00,
+            capacity=4,
+            image_url="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80"
+        ),
+        models.Property(
+            title="Бунгало Palm Beach",
+            location="Оаху, Гавайи",
+            description="Уютное бунгало прямо на пляже. Запах океана, шум волн и гамак под пальмами. Полный релакс и отрыв от реальности.",
+            price_per_night=180.00,
+            capacity=2,
+            image_url="https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=800&q=80"
+        )
+    ]
+    for prop in properties:
+        db.add(prop)
+        
     db.commit()
-    print("В базу данных успешно добавлены реальные туры с фотографиями!")
+    print("В БД успешно добавлены тестовые туры и объекты недвижимости!")
 
 if __name__ == "__main__":
     db = SessionLocal()

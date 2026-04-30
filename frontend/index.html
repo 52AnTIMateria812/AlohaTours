@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlohaTours - Windows Vista Edition</title>
-    <link rel="stylesheet" href="/frontend/style.css?v=11">
+    <title>NovaTours - Cyberpunk Edition</title>
+    <link rel="stylesheet" href="/frontend/style.css?v=13">
+    <link rel="stylesheet" href="/frontend/dark-theme.css?v=2">
     <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -17,7 +18,10 @@
                 <span class="control maximize"></span>
                 <span class="control close"></span>
             </div>
-            <h1>AlohaTours 🌴</h1>
+            <div style="display:flex; align-items:center; gap: 10px;">
+                <h1>NovaTours</h1>
+                <button class="aero-btn" onclick="toggleTheme()" style="padding: 2px 10px; font-size: 0.8em; margin-left: 10px;">🌙 Тема</button>
+            </div>
             <div class="auth-panel" id="auth-section">
                 <button class="aero-btn" onclick="showLogin()">Вход</button>
                 <button class="aero-btn" onclick="showRegister()">Регистрация</button>
@@ -31,14 +35,21 @@
 
         <main class="window-content" id="main-content">
             <div class="toolbar aero-glass-light">
-                <h2>Каталог туров</h2>
+                <div class="tabs" style="display: flex; gap: 10px;">
+                    <button class="aero-btn primary" id="tab-tours" onclick="switchTab('tours')">Туры</button>
+                    <button class="aero-btn" id="tab-properties" onclick="switchTab('properties')">Недвижимость</button>
+                </div>
                 <div class="filters">
-                    <input type="text" id="countryFilter" class="aero-input" placeholder="Поиск по стране..." oninput="filterTours()">
+                    <input type="text" id="countryFilter" class="aero-input" placeholder="Поиск по стране/локации..." oninput="filterAll()">
                 </div>
             </div>
 
             <div id="tours-container" class="tours-grid">
                 <!-- Туры будут загружены сюда -->
+            </div>
+            
+            <div id="properties-container" class="tours-grid" style="display: none;">
+                <!-- Недвижимость будет загружена сюда -->
             </div>
         </main>
         
@@ -56,7 +67,7 @@
         </main>
 
         <footer class="aero-footer">
-            <p>AlohaTours © 2007 - 2026. Vaporwave & Vista Edition.</p>
+            <p>NovaTours © 2007 - 2026. Vaporwave & Synthwave Edition.</p>
         </footer>
     </div>
 
@@ -152,6 +163,41 @@
         </div>
     </div>
 
-    <script src="/frontend/script.js?v=11"></script>
+    <!-- Модальное окно Бронирования Недвижимости -->
+    <div id="propertyBookingModal" class="modal">
+        <div class="modal-content aero-glass" style="width: 400px;">
+            <div class="modal-header">
+                <div class="window-controls">
+                    <div class="control close" onclick="closeModals()" style="cursor:pointer;"></div>
+                    <div class="control minimize"></div>
+                    <div class="control maximize"></div>
+                </div>
+                <h2>Аренда недвижимости</h2>
+            </div>
+            <div class="modal-body">
+                <h3 id="book-prop-title" style="margin-top:0; color:#1a5b82;"></h3>
+                <p>Цена за ночь: <strong id="book-prop-price"></strong></p>
+                
+                <label for="prop-start-date">Дата заезда:</label>
+                <input type="date" id="prop-start-date" class="aero-input" oninput="updatePropBookingPrice()">
+                
+                <label for="prop-end-date" style="margin-top: 10px;">Дата выезда:</label>
+                <input type="date" id="prop-end-date" class="aero-input" oninput="updatePropBookingPrice()">
+
+                <label for="prop-people" style="margin-top: 10px;">Количество человек:</label>
+                <input type="number" id="prop-people" class="aero-input" value="1" min="1" oninput="updatePropBookingPrice()">
+                
+                <div style="margin-top: 15px; font-size: 1.2em; border-top: 1px solid #ccc; padding-top: 10px;">
+                    Итого к оплате: <strong id="prop-total-price" style="color: #2e8b57;">$0.00</strong>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="aero-btn primary" onclick="confirmPropertyBooking()">Подтвердить бронь</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/frontend/script.js?v=12"></script>
 </body>
 </html>

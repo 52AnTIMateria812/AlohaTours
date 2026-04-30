@@ -74,9 +74,51 @@ class OrderResponse(BaseModel):
     class Config:
         from_attributes = True
 
+# --- Недвижимость ---
+class PropertyBase(BaseModel):
+    title: str
+    location: str
+    description: Optional[str] = None
+    price_per_night: Decimal
+    capacity: int
+    image_url: Optional[str] = None
+
+class PropertyCreate(PropertyBase):
+    pass
+
+class PropertyResponse(PropertyBase):
+    id: int
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+class PropertyOrderCreate(BaseModel):
+    property_id: int
+    start_date: date
+    end_date: date
+    people_count: int = 1
+
+class PropertyOrderResponse(BaseModel):
+    id: int
+    user_id: int
+    property_id: int
+    start_date: date
+    end_date: date
+    people_count: int
+    status: str
+    order_date: datetime
+    total_price: Decimal
+
+    property: Optional[PropertyResponse] = None
+
+    class Config:
+        from_attributes = True
+
 # --- Админские схемы (Пользователи + их заявки) ---
 class UserWithOrdersResponse(UserResponse):
     orders: List[OrderResponse] = []
+    property_orders: List[PropertyOrderResponse] = []
 
     class Config:
         from_attributes = True
