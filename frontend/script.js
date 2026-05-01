@@ -63,7 +63,7 @@ function renderTours(tours) {
     container.innerHTML = '';
     
     if (tours.length === 0) {
-        container.innerHTML = '<p style="padding: 20px;">Туров не найдено.</p>';
+        container.innerHTML = '<p style="padding: 20px; color: #fff;">Туров не найдено. Попробуйте изменить параметры поиска.</p>';
         return;
     }
 
@@ -72,14 +72,19 @@ function renderTours(tours) {
         card.className = 'tour-card aero-glass-light';
         const imgHtml = tour.image_url ? `<img class="tour-img" src="${tour.image_url}" alt="${tour.title}">` : '';
         
+        let stars = '';
+        if (tour.hotel_stars) {
+            stars = '⭐'.repeat(tour.hotel_stars);
+        }
+
         card.innerHTML = `
             ${imgHtml}
             <div class="tour-info">
-                <h3>${tour.title}</h3>
-                <p><strong>Страна:</strong> ${tour.country}</p>
-                <p style="font-size: 0.9em; color: #555;">${tour.description}</p>
-                <p style="font-size: 0.85em;"><strong>Даты:</strong> ${tour.start_date} - ${tour.end_date}</p>
-                <p style="font-size: 0.85em;">Мест: ${tour.capacity}</p>
+                <h3 style="margin-top:0;">${tour.hotel_name || tour.title} <span style="color:#ffd700;">${stars}</span></h3>
+                <p><strong>Маршрут:</strong> ${tour.origin_city || 'Любой'} ➔ ${tour.country} (${tour.resort || 'Любой курорт'})</p>
+                <p><strong>Питание:</strong> ${tour.board_type || 'Не указано'}</p>
+                <p><strong>Ночей:</strong> ${tour.nights || '-'} | <strong>Вылет:</strong> ${tour.start_date}</p>
+                <p style="font-size: 0.85em; color: #ccc;">Осталось мест: ${tour.capacity}</p>
                 <p class="price">$${tour.price}</p>
                 <button class="aero-btn primary" onclick='openBookingModal(${tour.id})'>Забронировать</button>
             </div>
@@ -88,15 +93,44 @@ function renderTours(tours) {
     });
 }
 
+async function performAdvancedSearch() {
+    const origin = document.getElementById('search-origin')?.value;
+    const dest = document.getElementById('search-destination')?.value || document.getElementById('countryFilter')?.value;
+    const date = document.getElementById('search-date')?.value;
+    const nights = document.getElementById('search-nights')?.value;
+    const adults = document.getElementById('search-adults')?.value;
+    const children = document.getElementById('search-children')?.value;
+    const stars = document.getElementById('filter-stars')?.value;
+    const board = document.getElementById('filter-board')?.value;
+    
+    const params = new URLSearchParams();
+    if (origin) params.append('origin_city', origin);
+    if (dest) {
+        params.append('destination', dest);
+    }
+    if (date) params.append('date_start', date);
+    if (nights) params.append('nights', nights);
+    if (adults) params.append('adults', adults);
+    if (children) params.append('children', children);
+    if (stars) params.append('hotel_stars', stars);
+    if (board) params.append('board_type', board);
+
+    try {
+        const res = await fetch(`${API_URL}/tours/search?${params.toString()}`);
+        if (res.ok) {
+            allTours = await res.json();
+            renderTours(allTours);
+        }
+    } catch (err) {
+        console.error("Ошибка поиска туров", err);
+    }
+}
+
 function filterAll() {
-    const query = document.getElementById('countryFilter').value.toLowerCase();
     if (activeTab === 'tours') {
-        const filtered = allTours.filter(tour => 
-            tour.country.toLowerCase().includes(query) || 
-            tour.title.toLowerCase().includes(query)
-        );
-        renderTours(filtered);
+        performAdvancedSearch();
     } else {
+        const query = document.getElementById('countryFilter').value.toLowerCase();
         const filtered = allProperties.filter(prop => 
             prop.location.toLowerCase().includes(query) || 
             prop.title.toLowerCase().includes(query)

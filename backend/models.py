@@ -23,13 +23,19 @@ class Tour(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(200), nullable=False)
     country = Column(String(100), nullable=False)
+    resort = Column(String(100), nullable=True)
+    origin_city = Column(String(100), nullable=True)
+    hotel_name = Column(String(200), nullable=True)
+    hotel_stars = Column(Integer, default=3)
+    board_type = Column(String(20), nullable=True)
+    nights = Column(Integer, nullable=True)
     description = Column(String, nullable=True)
     price = Column(Numeric(10, 2), nullable=False)
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
     capacity = Column(Integer, nullable=False)
     is_active = Column(Boolean, default=True)
-    image_url = Column(String, nullable=True) # Добавлено поле для реальных фото
+    image_url = Column(String, nullable=True)
 
     orders = relationship("Order", back_populates="tour")
 

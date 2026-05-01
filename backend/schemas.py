@@ -24,6 +24,12 @@ class UserResponse(BaseModel):
 class TourBase(BaseModel):
     title: str
     country: str
+    resort: Optional[str] = None
+    origin_city: Optional[str] = None
+    hotel_name: Optional[str] = None
+    hotel_stars: int = 3
+    board_type: Optional[str] = None
+    nights: Optional[int] = None
     description: Optional[str] = None
     price: Decimal
     start_date: date
@@ -38,6 +44,12 @@ class TourCreate(TourBase):
 class TourUpdate(BaseModel):
     title: Optional[str] = None
     country: Optional[str] = None
+    resort: Optional[str] = None
+    origin_city: Optional[str] = None
+    hotel_name: Optional[str] = None
+    hotel_stars: Optional[int] = None
+    board_type: Optional[str] = None
+    nights: Optional[int] = None
     description: Optional[str] = None
     price: Optional[Decimal] = None
     start_date: Optional[date] = None

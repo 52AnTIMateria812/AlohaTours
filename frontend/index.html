@@ -11,8 +11,7 @@
 <body>
     <div class="background-container"></div>
 
-    <div class="window-container aero-glass">
-        <header class="aero-header">
+    <header class="aero-header fixed-header aero-glass">
             <div class="window-controls">
                 <span class="control minimize"></span>
                 <span class="control maximize"></span>
@@ -33,27 +32,88 @@
             </div>
         </header>
 
-        <main class="window-content" id="main-content">
-            <div class="toolbar aero-glass-light">
-                <div class="tabs" style="display: flex; gap: 10px;">
-                    <button class="aero-btn primary" id="tab-tours" onclick="switchTab('tours')">Туры</button>
-                    <button class="aero-btn" id="tab-properties" onclick="switchTab('properties')">Недвижимость</button>
-                </div>
-                <div class="filters">
-                    <input type="text" id="countryFilter" class="aero-input" placeholder="Поиск по стране/локации..." oninput="filterAll()">
+        <main id="main-content" style="padding-top: 60px;">
+            <div class="hero-section">
+                <div class="hero-content aero-glass">
+                    <h2 style="margin-top: 0; color: #fff; text-shadow: 0 0 5px #000;">Найти тур вашей мечты</h2>
+                    <div class="search-widget">
+                        <div class="search-row" style="display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+                            <div class="search-group" style="flex: 1; min-width: 150px;">
+                                <label style="display: block; margin-bottom: 5px; color: #fff; font-weight: bold; text-shadow: 0 0 2px #000;">Откуда</label>
+                                <input type="text" id="search-origin" class="aero-input" placeholder="Город вылета" style="width: 100%;">
+                            </div>
+                            <div class="search-group" style="flex: 1; min-width: 150px;">
+                                <label style="display: block; margin-bottom: 5px; color: #fff; font-weight: bold; text-shadow: 0 0 2px #000;">Куда</label>
+                                <input type="text" id="search-destination" class="aero-input" placeholder="Курорт / Страна" style="width: 100%;">
+                            </div>
+                            <div class="search-group" style="flex: 1; min-width: 130px;">
+                                <label style="display: block; margin-bottom: 5px; color: #fff; font-weight: bold; text-shadow: 0 0 2px #000;">Дата вылета (от)</label>
+                                <input type="date" id="search-date" class="aero-input" style="width: 100%;">
+                            </div>
+                            <div class="search-group" style="flex: 0 1 80px;">
+                                <label style="display: block; margin-bottom: 5px; color: #fff; font-weight: bold; text-shadow: 0 0 2px #000;">Ночей</label>
+                                <input type="number" id="search-nights" class="aero-input" placeholder="Любое" style="width: 100%;">
+                            </div>
+                            <div class="search-group" style="flex: 0 1 80px;">
+                                <label style="display: block; margin-bottom: 5px; color: #fff; font-weight: bold; text-shadow: 0 0 2px #000;">Взрослые</label>
+                                <input type="number" id="search-adults" class="aero-input" value="2" min="1" style="width: 100%;">
+                            </div>
+                            <div class="search-group search-btn-group" style="flex: 1; min-width: 150px;">
+                                <button class="aero-btn primary" onclick="performAdvancedSearch()" style="width: 100%; height: 38px; font-weight: bold; font-size: 1.1em;">Искать туры</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div id="tours-container" class="tours-grid">
-                <!-- Туры будут загружены сюда -->
-            </div>
-            
-            <div id="properties-container" class="tours-grid" style="display: none;">
-                <!-- Недвижимость будет загружена сюда -->
+            <div class="page-container" style="max-width: 1200px; margin: 0 auto; background: rgba(255, 255, 255, 0.85); padding-top: 20px; min-height: 100vh;">
+                <div class="content-with-sidebar" style="display: flex; padding: 0 20px 20px 20px; gap: 20px;">
+                    <aside class="sidebar aero-glass-light" style="width: 250px; padding: 15px; border-radius: 8px; flex-shrink: 0; align-self: flex-start;">
+                    <h3 style="margin-top:0;">Разделы</h3>
+                    <div class="tabs" style="display: flex; gap: 10px; flex-direction: column; margin-bottom: 20px;">
+                        <button class="aero-btn primary" id="tab-tours" onclick="switchTab('tours')" style="width:100%">Пакетные Туры</button>
+                        <button class="aero-btn" id="tab-properties" onclick="switchTab('properties')" style="width:100%">Недвижимость</button>
+                    </div>
+
+                    <h3 style="margin-top:0; padding-top: 15px; border-top: 1px solid rgba(128,128,128,0.3);">Уточнить поиск</h3>
+                    <div class="filter-group" style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:5px;">Звездность отеля от:</label>
+                        <select id="filter-stars" class="aero-input" onchange="performAdvancedSearch()" style="width:100%">
+                            <option value="">Любая</option>
+                            <option value="3">3* и выше</option>
+                            <option value="4">4* и выше</option>
+                            <option value="5">5*</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:5px;">Питание:</label>
+                        <select id="filter-board" class="aero-input" onchange="performAdvancedSearch()" style="width:100%">
+                            <option value="">Любое</option>
+                            <option value="AI">Всё включено (AI/UAI)</option>
+                            <option value="BB">Завтраки (BB)</option>
+                            <option value="HB">Завтрак+Ужин (HB)</option>
+                            <option value="RO">Без питания (RO)</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label style="display:block; margin-bottom:5px;">Поиск по названию:</label>
+                        <input type="text" id="countryFilter" class="aero-input" placeholder="Отель или страна..." oninput="filterAll()" style="width:100%">
+                    </div>
+                </aside>
+
+                <div class="main-results" style="flex: 1;">
+                    <div id="tours-container" class="tours-grid list-view">
+                        <!-- Туры будут загружены сюда -->
+                    </div>
+                    
+                    <div id="properties-container" class="tours-grid" style="display: none;">
+                        <!-- Недвижимость будет загружена сюда -->
+                    </div>
+                </div>
             </div>
         </main>
         
-        <main class="window-content" id="admin-content" style="display: none;">
+        <main id="admin-content" style="display: none; padding-top: 60px; max-width: 1200px; margin: 0 auto; background: rgba(255, 255, 255, 0.85); min-height: 100vh;">
             <div class="toolbar aero-glass-light">
                 <h2>Панель Администратора</h2>
                 <button class="aero-btn" onclick="hideAdminPanel()">Назад в каталог</button>
@@ -66,10 +126,9 @@
             </div>
         </main>
 
-        <footer class="aero-footer">
+        <footer class="aero-footer" style="position: relative; z-index: 10;">
             <p>NovaTours © 2007 - 2026. Vaporwave & Synthwave Edition.</p>
         </footer>
-    </div>
 
     <!-- Модальное окно Входа (Aero Glass) -->
     <div id="loginModal" class="modal">

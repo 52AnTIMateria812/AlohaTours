@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from typing import List
-from datetime import timedelta
+from typing import List, Optional
+from datetime import timedelta, date
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -76,6 +76,41 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 def get_active_tours(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     tours = db.query(models.Tour).filter(models.Tour.is_active == True).offset(skip).limit(limit).all()
     return tours
+
+@app.get("/api/tours/search", response_model=List[schemas.TourResponse])
+def search_tours(
+    origin_city: Optional[str] = None,
+    destination: Optional[str] = None,
+    resort: Optional[str] = None,
+    date_start: Optional[date] = None,
+    nights: Optional[int] = None,
+    adults: int = 1,
+    children: int = 0,
+    hotel_stars: Optional[int] = None,
+    board_type: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    query = db.query(models.Tour).filter(models.Tour.is_active == True)
+    
+    if origin_city:
+        query = query.filter(models.Tour.origin_city.ilike(f"%{origin_city}%"))
+    if destination:
+        query = query.filter(models.Tour.country.ilike(f"%{destination}%"))
+    if resort:
+        query = query.filter(models.Tour.resort.ilike(f"%{resort}%"))
+    if date_start:
+        query = query.filter(models.Tour.start_date >= date_start)
+    if nights:
+        query = query.filter(models.Tour.nights == nights)
+    if hotel_stars:
+        query = query.filter(models.Tour.hotel_stars >= hotel_stars)
+    if board_type:
+        query = query.filter(models.Tour.board_type.ilike(f"%{board_type}%"))
+        
+    total_people = adults + children
+    query = query.filter(models.Tour.capacity >= total_people)
+    
+    return query.all()
 
 @app.get("/api/tours/{tour_id}", response_model=schemas.TourResponse)
 def get_tour(tour_id: int, db: Session = Depends(get_db)):
