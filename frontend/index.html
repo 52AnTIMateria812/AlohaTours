@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaTours - Grayscale Edition</title>
-    <link rel="stylesheet" href="/frontend/style.css?v=14">
+    <link rel="stylesheet" href="/frontend/style.css?v=15">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body class="fade-in">
@@ -12,13 +12,13 @@
         <div class="header-container">
             <h1 class="logo">NOVATOURS.</h1>
             <nav class="auth-panel" id="auth-section">
-                <button class="gs-btn-text" onclick="showLogin()">LOG IN</button>
-                <button class="gs-btn" onclick="showRegister()">SIGN UP</button>
+                <button class="gs-btn-text" onclick="showLogin()">ВОЙТИ</button>
+                <button class="gs-btn" onclick="showRegister()">РЕГИСТРАЦИЯ</button>
             </nav>
             <nav class="auth-panel" id="user-section" style="display: none;">
                 <span id="user-name" class="user-name"></span>
-                <button class="gs-btn-text" id="admin-btn" style="display: none;" onclick="showAdminPanel()">ADMIN</button>
-                <button class="gs-btn" onclick="logout()">LOGOUT</button>
+                <button class="gs-btn-text" id="admin-btn" style="display: none;" onclick="showAdminPanel()">АДМИН-ПАНЕЛЬ</button>
+                <button class="gs-btn" onclick="logout()">ВЫЙТИ</button>
             </nav>
         </div>
     </header>
@@ -26,32 +26,34 @@
     <main id="main-content">
         <section class="hero-section slide-up">
             <div class="hero-content">
-                <h2>EXPLORE THE WORLD.</h2>
+                <h2>ОТКРОЙТЕ МИР.</h2>
                 <div class="search-widget">
-                    <div class="search-row">
-                        <div class="search-group">
-                            <label>ORIGIN</label>
-                            <input type="text" id="search-origin" class="gs-input" placeholder="City">
+                    <div class="unified-search-bar">
+                        <div class="search-field">
+                            <label>ОТКУДА</label>
+                            <input type="text" id="search-origin" class="gs-input-unified" placeholder="Город">
                         </div>
-                        <div class="search-group">
-                            <label>DESTINATION</label>
-                            <input type="text" id="search-destination" class="gs-input" placeholder="Country / Resort">
+                        <div class="search-divider"></div>
+                        <div class="search-field">
+                            <label>КУДА</label>
+                            <input type="text" id="search-destination" class="gs-input-unified" placeholder="Страна / Курорт">
                         </div>
-                        <div class="search-group">
-                            <label>DEPARTURE</label>
-                            <input type="date" id="search-date" class="gs-input">
+                        <div class="search-divider"></div>
+                        <div class="search-field">
+                            <label>ДАТА ВЫЛЕТА</label>
+                            <input type="date" id="search-date" class="gs-input-unified">
                         </div>
-                        <div class="search-group small-group">
-                            <label>NIGHTS</label>
-                            <input type="number" id="search-nights" class="gs-input" placeholder="Any">
+                        <div class="search-divider"></div>
+                        <div class="search-field small-field">
+                            <label>НОЧЕЙ</label>
+                            <input type="number" id="search-nights" class="gs-input-unified" placeholder="Любое">
                         </div>
-                        <div class="search-group small-group">
-                            <label>GUESTS</label>
-                            <input type="number" id="search-adults" class="gs-input" value="2" min="1">
+                        <div class="search-divider"></div>
+                        <div class="search-field small-field">
+                            <label>ТУРИСТЫ</label>
+                            <input type="number" id="search-adults" class="gs-input-unified" value="2" min="1">
                         </div>
-                        <div class="search-group btn-group">
-                            <button class="gs-btn-primary" onclick="performAdvancedSearch()">SEARCH</button>
-                        </div>
+                        <button class="gs-btn-search" onclick="performAdvancedSearch()">НАЙТИ</button>
                     </div>
                 </div>
             </div>
@@ -60,35 +62,35 @@
         <section class="content-section">
             <div class="page-container">
                 <aside class="sidebar slide-up" style="animation-delay: 0.1s;">
-                    <h3>CATEGORIES</h3>
+                    <h3>КАТЕГОРИИ</h3>
                     <div class="tabs">
-                        <button class="gs-tab active" id="tab-tours" onclick="switchTab('tours')">Package Tours</button>
-                        <button class="gs-tab" id="tab-properties" onclick="switchTab('properties')">Properties</button>
+                        <button class="gs-tab active" id="tab-tours" onclick="switchTab('tours')">Пакетные туры</button>
+                        <button class="gs-tab" id="tab-properties" onclick="switchTab('properties')">Недвижимость</button>
                     </div>
 
-                    <h3 class="mt-20">FILTERS</h3>
+                    <h3 class="mt-20">ФИЛЬТРЫ</h3>
                     <div class="filter-group">
-                        <label>MIN. STARS</label>
+                        <label>МИНИМУМ ЗВЕЗД</label>
                         <select id="filter-stars" class="gs-input" onchange="performAdvancedSearch()">
-                            <option value="">Any</option>
-                            <option value="3">3* and above</option>
-                            <option value="4">4* and above</option>
-                            <option value="5">5* only</option>
+                            <option value="">Любая</option>
+                            <option value="3">3* и выше</option>
+                            <option value="4">4* и выше</option>
+                            <option value="5">только 5*</option>
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label>BOARD</label>
+                        <label>ПИТАНИЕ</label>
                         <select id="filter-board" class="gs-input" onchange="performAdvancedSearch()">
-                            <option value="">Any</option>
-                            <option value="AI">All Inclusive</option>
-                            <option value="BB">Bed & Breakfast</option>
-                            <option value="HB">Half Board</option>
-                            <option value="RO">Room Only</option>
+                            <option value="">Любое</option>
+                            <option value="AI">Всё включено (AI)</option>
+                            <option value="BB">Завтраки (BB)</option>
+                            <option value="HB">Полупансион (HB)</option>
+                            <option value="RO">Без питания (RO)</option>
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label>SEARCH</label>
-                        <input type="text" id="countryFilter" class="gs-input" placeholder="Keywords..." oninput="filterAll()">
+                        <label>ПОИСК ПО НАЗВАНИЮ</label>
+                        <input type="text" id="countryFilter" class="gs-input" placeholder="Ключевые слова..." oninput="filterAll()">
                     </div>
                 </aside>
 
@@ -108,8 +110,8 @@
     <main id="admin-content" style="display: none;" class="fade-in">
         <div class="page-container" style="flex-direction: column;">
             <div class="toolbar">
-                <h2>ADMINISTRATOR DASHBOARD</h2>
-                <button class="gs-btn-text" onclick="hideAdminPanel()">← BACK</button>
+                <h2>ПАНЕЛЬ АДМИНИСТРАТОРА</h2>
+                <button class="gs-btn-text" onclick="hideAdminPanel()">← НАЗАД</button>
             </div>
             <div class="admin-panel">
                 <div id="admin-users-container">
@@ -127,14 +129,14 @@
     <div id="loginModal" class="gs-modal">
         <div class="gs-modal-content slide-up">
             <div class="gs-modal-header">
-                <h2>LOG IN</h2>
+                <h2>ВОЙТИ В СИСТЕМУ</h2>
                 <span class="close-modal" onclick="closeModals()">✕</span>
             </div>
             <div class="gs-modal-body">
                 <input type="email" id="loginEmail" class="gs-input" placeholder="Email">
-                <input type="password" id="loginPassword" class="gs-input" placeholder="Password">
+                <input type="password" id="loginPassword" class="gs-input" placeholder="Пароль">
                 <div class="gs-modal-actions">
-                    <button class="gs-btn-primary" onclick="login()">CONTINUE</button>
+                    <button class="gs-btn-primary" onclick="login()">ПРОДОЛЖИТЬ</button>
                 </div>
             </div>
         </div>
@@ -143,15 +145,15 @@
     <div id="registerModal" class="gs-modal">
         <div class="gs-modal-content slide-up">
             <div class="gs-modal-header">
-                <h2>CREATE ACCOUNT</h2>
+                <h2>СОЗДАТЬ АККАУНТ</h2>
                 <span class="close-modal" onclick="closeModals()">✕</span>
             </div>
             <div class="gs-modal-body">
-                <input type="text" id="regName" class="gs-input" placeholder="Full Name">
+                <input type="text" id="regName" class="gs-input" placeholder="ФИО">
                 <input type="email" id="regEmail" class="gs-input" placeholder="Email">
-                <input type="password" id="regPassword" class="gs-input" placeholder="Password">
+                <input type="password" id="regPassword" class="gs-input" placeholder="Пароль">
                 <div class="gs-modal-actions">
-                    <button class="gs-btn-primary" onclick="register()">REGISTER</button>
+                    <button class="gs-btn-primary" onclick="register()">ЗАРЕГИСТРИРОВАТЬСЯ</button>
                 </div>
             </div>
         </div>
@@ -160,14 +162,14 @@
     <div id="authRequiredModal" class="gs-modal">
         <div class="gs-modal-content slide-up">
             <div class="gs-modal-header">
-                <h2>AUTHENTICATION REQUIRED</h2>
+                <h2>ТРЕБУЕТСЯ АВТОРИЗАЦИЯ</h2>
                 <span class="close-modal" onclick="closeModals()">✕</span>
             </div>
             <div class="gs-modal-body text-center">
-                <p>Please log in or create an account to proceed with booking.</p>
+                <p>Пожалуйста, войдите в систему или создайте аккаунт для оформления брони.</p>
                 <div class="gs-modal-actions center-actions mt-20">
-                    <button class="gs-btn-primary" onclick="closeModals(); showLogin();">LOG IN</button>
-                    <button class="gs-btn" onclick="closeModals(); showRegister();">SIGN UP</button>
+                    <button class="gs-btn-primary" onclick="closeModals(); showLogin();">ВОЙТИ</button>
+                    <button class="gs-btn" onclick="closeModals(); showRegister();">РЕГИСТРАЦИЯ</button>
                 </div>
             </div>
         </div>
@@ -176,21 +178,21 @@
     <div id="bookingModal" class="gs-modal">
         <div class="gs-modal-content slide-up">
             <div class="gs-modal-header">
-                <h2>CHECKOUT</h2>
+                <h2>ОФОРМЛЕНИЕ ЗАЯВКИ</h2>
                 <span class="close-modal" onclick="closeModals()">✕</span>
             </div>
             <div class="gs-modal-body">
                 <h3 id="book-tour-title" class="checkout-title"></h3>
-                <p class="checkout-detail">Base Price: <strong id="book-tour-price"></strong></p>
-                <label>GUESTS</label>
+                <p class="checkout-detail">Базовая цена: <strong id="book-tour-price"></strong></p>
+                <label>ТУРИСТЫ</label>
                 <input type="number" id="book-people" class="gs-input" value="1" min="1" oninput="updateBookingPrice()">
                 
                 <div class="checkout-total">
-                    TOTAL: <strong id="book-total-price"></strong>
+                    ИТОГО: <strong id="book-total-price"></strong>
                 </div>
 
                 <div class="gs-modal-actions">
-                    <button class="gs-btn-primary" onclick="confirmBooking()">CONFIRM BOOKING</button>
+                    <button class="gs-btn-primary" onclick="confirmBooking()">ПОДТВЕРДИТЬ БРОНЬ</button>
                 </div>
             </div>
         </div>
@@ -199,33 +201,33 @@
     <div id="propertyBookingModal" class="gs-modal">
         <div class="gs-modal-content slide-up">
             <div class="gs-modal-header">
-                <h2>RENT PROPERTY</h2>
+                <h2>АРЕНДА НЕДВИЖИМОСТИ</h2>
                 <span class="close-modal" onclick="closeModals()">✕</span>
             </div>
             <div class="gs-modal-body">
                 <h3 id="book-prop-title" class="checkout-title"></h3>
-                <p class="checkout-detail">Price per night: <strong id="book-prop-price"></strong></p>
+                <p class="checkout-detail">Цена за ночь: <strong id="book-prop-price"></strong></p>
                 
-                <label>CHECK-IN</label>
+                <label>ДАТА ЗАЕЗДА</label>
                 <input type="date" id="prop-start-date" class="gs-input" oninput="updatePropBookingPrice()">
                 
-                <label class="mt-10">CHECK-OUT</label>
+                <label class="mt-10">ДАТА ВЫЕЗДА</label>
                 <input type="date" id="prop-end-date" class="gs-input" oninput="updatePropBookingPrice()">
 
-                <label class="mt-10">GUESTS</label>
+                <label class="mt-10">ГОСТИ</label>
                 <input type="number" id="prop-people" class="gs-input" value="1" min="1" oninput="updatePropBookingPrice()">
                 
                 <div class="checkout-total">
-                    TOTAL: <strong id="prop-total-price">$0.00</strong>
+                    ИТОГО: <strong id="prop-total-price">$0.00</strong>
                 </div>
 
                 <div class="gs-modal-actions">
-                    <button class="gs-btn-primary" onclick="confirmPropertyBooking()">CONFIRM BOOKING</button>
+                    <button class="gs-btn-primary" onclick="confirmPropertyBooking()">ПОДТВЕРДИТЬ БРОНЬ</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="/frontend/script.js?v=13"></script>
+    <script src="/frontend/script.js?v=14"></script>
 </body>
 </html>

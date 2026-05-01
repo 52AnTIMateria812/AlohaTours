@@ -17,33 +17,42 @@ function parseJwt (token) {
     } catch(e) { return null; }
 }
 
-function toggleTheme() {
-    // В версии Grayscale всегда используется темная тема
-}
-
-// Применяем тему при загрузке
-if (localStorage.getItem('theme') === 'dark') {
-    // legacy
-}
-
 function updateAuthUI() {
     const adminBtn = document.getElementById('admin-btn');
     if (token) {
         document.getElementById('auth-section').style.display = 'none';
         document.getElementById('user-section').style.display = 'flex';
-        document.getElementById('user-name').innerText = "Вы вошли";
         
         const payload = parseJwt(token);
+        // Показываем email или имя, если есть в токене
+        const userName = payload && payload.sub ? payload.sub : 'Профиль';
+        document.getElementById('user-name').innerText = userName;
+        
         if (payload && payload.role === 'manager') {
             adminBtn.style.display = 'block';
         } else {
             adminBtn.style.display = 'none';
         }
     } else {
-        document.getElementById('auth-section').style.display = 'block';
+        document.getElementById('auth-section').style.display = 'flex';
         document.getElementById('user-section').style.display = 'none';
         adminBtn.style.display = 'none';
     }
+}
+
+// Глобальная обертка для fetch запросов с проверкой токена
+async function fetchWithAuth(url, options = {}) {
+    if (token) {
+        if (!options.headers) options.headers = {};
+        options.headers['Authorization'] = `Bearer ${token}`;
+    }
+    const res = await fetch(url, options);
+    if (res.status === 401) {
+        alert("Сессия устарела. Пожалуйста, войдите снова.");
+        logout();
+        throw new Error("Unauthorized");
+    }
+    return res;
 }
 
 async function loadTours() {
@@ -61,30 +70,30 @@ function renderTours(tours) {
     container.innerHTML = '';
     
     if (tours.length === 0) {
-        container.innerHTML = '<p style="padding: 20px; color: #fff;">Туров не найдено. Попробуйте изменить параметры поиска.</p>';
+        container.innerHTML = '<p style="padding: 20px;">Туров не найдено. Попробуйте изменить параметры поиска.</p>';
         return;
     }
 
     tours.forEach(tour => {
         const card = document.createElement('div');
         card.className = 'tour-card';
-        const imgHtml = tour.image_url ? `<img class="tour-img" src="${tour.image_url}" alt="${tour.title}">` : '';
         
-        let stars = '';
-        if (tour.hotel_stars) {
-            stars = '⭐'.repeat(tour.hotel_stars);
-        }
+        const placeholder = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=80';
+        const imgSrc = tour.image_url || placeholder;
+        const imgHtml = `<img class="tour-img" src="${imgSrc}" alt="${tour.title}" onerror="this.onerror=null;this.src='${placeholder}';">`;
+        
+        let stars = tour.hotel_stars ? `${tour.hotel_stars}*` : '';
 
         card.innerHTML = `
             ${imgHtml}
             <div class="tour-info">
-                <h3 style="margin-top:0;">${tour.hotel_name || tour.title} <span style="color:#ffd700;">${stars}</span></h3>
+                <h3 style="margin-top:0;">${tour.hotel_name || tour.title} <span style="color:var(--text-muted); font-size:0.8em; margin-left:5px;">${stars}</span></h3>
                 <p><strong>Маршрут:</strong> ${tour.origin_city || 'Любой'} ➔ ${tour.country} (${tour.resort || 'Любой курорт'})</p>
                 <p><strong>Питание:</strong> ${tour.board_type || 'Не указано'}</p>
                 <p><strong>Ночей:</strong> ${tour.nights || '-'} | <strong>Вылет:</strong> ${tour.start_date}</p>
-                <p style="font-size: 0.85em; color: #ccc;">Осталось мест: ${tour.capacity}</p>
+                <p style="font-size: 0.85em; color: var(--text-muted);">Осталось мест: ${tour.capacity}</p>
                 <p class="price">$${tour.price}</p>
-                <button class="gs-btn-primary" onclick='openBookingModal(${tour.id})'>BOOK NOW</button>
+                <button class="gs-btn-primary" onclick='openBookingModal(${tour.id})'>ОФОРМИТЬ</button>
             </div>
         `;
         container.appendChild(card);
@@ -97,19 +106,15 @@ async function performAdvancedSearch() {
     const date = document.getElementById('search-date')?.value;
     const nights = document.getElementById('search-nights')?.value;
     const adults = document.getElementById('search-adults')?.value;
-    const children = document.getElementById('search-children')?.value;
     const stars = document.getElementById('filter-stars')?.value;
     const board = document.getElementById('filter-board')?.value;
     
     const params = new URLSearchParams();
     if (origin) params.append('origin_city', origin);
-    if (dest) {
-        params.append('destination', dest);
-    }
+    if (dest) params.append('destination', dest);
     if (date) params.append('date_start', date);
     if (nights) params.append('nights', nights);
     if (adults) params.append('adults', adults);
-    if (children) params.append('children', children);
     if (stars) params.append('hotel_stars', stars);
     if (board) params.append('board_type', board);
 
@@ -175,17 +180,20 @@ function renderProperties(properties) {
     properties.forEach(prop => {
         const card = document.createElement('div');
         card.className = 'tour-card';
-        const imgHtml = prop.image_url ? `<img class="tour-img" src="${prop.image_url}" alt="${prop.title}">` : '';
+        
+        const placeholder = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=500&q=80';
+        const imgSrc = prop.image_url || placeholder;
+        const imgHtml = `<img class="tour-img" src="${imgSrc}" alt="${prop.title}" onerror="this.onerror=null;this.src='${placeholder}';">`;
         
         card.innerHTML = `
             ${imgHtml}
             <div class="tour-info">
                 <h3>${prop.title}</h3>
                 <p><strong>Локация:</strong> ${prop.location}</p>
-                <p style="font-size: 0.9em; color: #555;">${prop.description}</p>
+                <p style="font-size: 0.9em; color: var(--text-muted);">${prop.description}</p>
                 <p style="font-size: 0.85em;">Вместимость: ${prop.capacity} чел.</p>
                 <p class="price">$${prop.price_per_night} / ночь</p>
-                <button class="gs-btn-primary" onclick='openPropertyBookingModal(${prop.id})'>RENT PROPERTY</button>
+                <button class="gs-btn-primary" onclick='openPropertyBookingModal(${prop.id})'>АРЕНДОВАТЬ</button>
             </div>
         `;
         container.appendChild(card);
@@ -195,7 +203,7 @@ function renderProperties(properties) {
 function showLogin() { document.getElementById('loginModal').style.display = 'flex'; }
 function showRegister() { document.getElementById('registerModal').style.display = 'flex'; }
 function closeModals() { 
-    document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+    document.querySelectorAll('.gs-modal').forEach(m => m.style.display = 'none');
 }
 
 async function login() {
@@ -292,22 +300,23 @@ async function confirmBooking() {
         return alert("Недостаточно мест!");
     }
 
-    const res = await fetch(`${API_URL}/orders/`, {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ tour_id: currentBookingTour.id, people_count: count })
-    });
+    try {
+        const res = await fetchWithAuth(`${API_URL}/orders/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tour_id: currentBookingTour.id, people_count: count })
+        });
 
-    if (res.ok) {
-        alert("Успешно забронировано!");
-        closeModals();
-        loadTours();
-    } else {
-        const err = await res.json();
-        alert("Ошибка: " + (err.detail || "Не удалось забронировать"));
+        if (res.ok) {
+            alert("Успешно забронировано!");
+            closeModals();
+            loadTours();
+        } else {
+            const err = await res.json();
+            alert("Ошибка: " + (err.detail || "Не удалось забронировать"));
+        }
+    } catch(e) {
+        // Ошибка 401 перехватывается в fetchWithAuth
     }
 }
 
@@ -365,26 +374,27 @@ async function confirmPropertyBooking() {
     const endObj = new Date(end);
     if (endObj <= startObj) return alert("Дата выезда должна быть позже даты заезда!");
 
-    const res = await fetch(`${API_URL}/property_orders/`, {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ 
-            property_id: currentBookingProperty.id, 
-            start_date: start,
-            end_date: end,
-            people_count: count 
-        })
-    });
+    try {
+        const res = await fetchWithAuth(`${API_URL}/property_orders/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                property_id: currentBookingProperty.id, 
+                start_date: start,
+                end_date: end,
+                people_count: count 
+            })
+        });
 
-    if (res.ok) {
-        alert("Недвижимость успешно забронирована!");
-        closeModals();
-    } else {
-        const err = await res.json();
-        alert("Ошибка: " + (err.detail || "Не удалось забронировать"));
+        if (res.ok) {
+            alert("Недвижимость успешно забронирована!");
+            closeModals();
+        } else {
+            const err = await res.json();
+            alert("Ошибка: " + (err.detail || "Не удалось забронировать"));
+        }
+    } catch(e) {
+        // Ошибка перехватывается в fetchWithAuth
     }
 }
 
@@ -394,10 +404,7 @@ async function showAdminPanel() {
     document.getElementById('admin-content').style.display = 'flex';
     
     try {
-        const res = await fetch(`${API_URL}/admin/users`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (!res.ok) throw new Error("Нет доступа");
+        const res = await fetchWithAuth(`${API_URL}/admin/users`);
         const users = await res.json();
         
         const container = document.getElementById('admin-users-container');
@@ -423,7 +430,9 @@ async function showAdminPanel() {
         container.innerHTML = html;
         
     } catch (e) {
-        alert("Ошибка загрузки данных администратора");
+        if (e.message !== "Unauthorized") {
+            alert("Ошибка загрузки данных администратора");
+        }
     }
 }
 
