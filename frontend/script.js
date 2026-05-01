@@ -24,7 +24,6 @@ function updateAuthUI() {
         document.getElementById('user-section').style.display = 'flex';
         
         const payload = parseJwt(token);
-        // Показываем email или имя, если есть в токене
         const userName = payload && payload.sub ? payload.sub : 'Профиль';
         document.getElementById('user-name').innerText = userName;
         
@@ -40,7 +39,6 @@ function updateAuthUI() {
     }
 }
 
-// Глобальная обертка для fetch запросов с проверкой токена
 async function fetchWithAuth(url, options = {}) {
     if (token) {
         if (!options.headers) options.headers = {};
@@ -268,7 +266,7 @@ function logout() {
     hideAdminPanel();
 }
 
-// Бронирование
+// === БРОНИРОВАНИЕ ===
 function openBookingModal(tourId) {
     if (!token) {
         document.getElementById('authRequiredModal').style.display = 'flex';
@@ -316,7 +314,7 @@ async function confirmBooking() {
             alert("Ошибка: " + (err.detail || "Не удалось забронировать"));
         }
     } catch(e) {
-        // Ошибка 401 перехватывается в fetchWithAuth
+        // Ошибка перехватывается в fetchWithAuth
     }
 }
 
@@ -389,6 +387,7 @@ async function confirmPropertyBooking() {
         if (res.ok) {
             alert("Недвижимость успешно забронирована!");
             closeModals();
+            loadProperties();
         } else {
             const err = await res.json();
             alert("Ошибка: " + (err.detail || "Не удалось забронировать"));
