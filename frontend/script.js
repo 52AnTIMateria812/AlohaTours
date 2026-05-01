@@ -18,14 +18,12 @@ function parseJwt (token) {
 }
 
 function toggleTheme() {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    // В версии Grayscale всегда используется темная тема
 }
 
 // Применяем тему при загрузке
 if (localStorage.getItem('theme') === 'dark') {
-    document.body.classList.add('dark-mode');
+    // legacy
 }
 
 function updateAuthUI() {
@@ -69,7 +67,7 @@ function renderTours(tours) {
 
     tours.forEach(tour => {
         const card = document.createElement('div');
-        card.className = 'tour-card aero-glass-light';
+        card.className = 'tour-card';
         const imgHtml = tour.image_url ? `<img class="tour-img" src="${tour.image_url}" alt="${tour.title}">` : '';
         
         let stars = '';
@@ -86,7 +84,7 @@ function renderTours(tours) {
                 <p><strong>Ночей:</strong> ${tour.nights || '-'} | <strong>Вылет:</strong> ${tour.start_date}</p>
                 <p style="font-size: 0.85em; color: #ccc;">Осталось мест: ${tour.capacity}</p>
                 <p class="price">$${tour.price}</p>
-                <button class="aero-btn primary" onclick='openBookingModal(${tour.id})'>Забронировать</button>
+                <button class="gs-btn-primary" onclick='openBookingModal(${tour.id})'>BOOK NOW</button>
             </div>
         `;
         container.appendChild(card);
@@ -144,13 +142,13 @@ function switchTab(tab) {
     if (tab === 'tours') {
         document.getElementById('tours-container').style.display = 'flex';
         document.getElementById('properties-container').style.display = 'none';
-        document.getElementById('tab-tours').classList.add('primary');
-        document.getElementById('tab-properties').classList.remove('primary');
+        document.getElementById('tab-tours').classList.add('active');
+        document.getElementById('tab-properties').classList.remove('active');
     } else {
         document.getElementById('tours-container').style.display = 'none';
         document.getElementById('properties-container').style.display = 'flex';
-        document.getElementById('tab-properties').classList.add('primary');
-        document.getElementById('tab-tours').classList.remove('primary');
+        document.getElementById('tab-properties').classList.add('active');
+        document.getElementById('tab-tours').classList.remove('active');
     }
     filterAll();
 }
@@ -176,7 +174,7 @@ function renderProperties(properties) {
 
     properties.forEach(prop => {
         const card = document.createElement('div');
-        card.className = 'tour-card aero-glass-light';
+        card.className = 'tour-card';
         const imgHtml = prop.image_url ? `<img class="tour-img" src="${prop.image_url}" alt="${prop.title}">` : '';
         
         card.innerHTML = `
@@ -187,7 +185,7 @@ function renderProperties(properties) {
                 <p style="font-size: 0.9em; color: #555;">${prop.description}</p>
                 <p style="font-size: 0.85em;">Вместимость: ${prop.capacity} чел.</p>
                 <p class="price">$${prop.price_per_night} / ночь</p>
-                <button class="aero-btn primary" onclick='openPropertyBookingModal(${prop.id})'>Арендовать</button>
+                <button class="gs-btn-primary" onclick='openPropertyBookingModal(${prop.id})'>RENT PROPERTY</button>
             </div>
         `;
         container.appendChild(card);

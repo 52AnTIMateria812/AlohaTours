@@ -3,260 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovaTours - Cyberpunk Edition</title>
-    <link rel="stylesheet" href="/frontend/style.css?v=13">
-    <link rel="stylesheet" href="/frontend/dark-theme.css?v=2">
-    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
+    <title>NovaTours - Grayscale Edition</title>
+    <link rel="stylesheet" href="/frontend/style.css?v=14">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div class="background-container"></div>
+<body class="fade-in">
+    <header class="gs-header">
+        <div class="header-container">
+            <h1 class="logo">NOVATOURS.</h1>
+            <nav class="auth-panel" id="auth-section">
+                <button class="gs-btn-text" onclick="showLogin()">LOG IN</button>
+                <button class="gs-btn" onclick="showRegister()">SIGN UP</button>
+            </nav>
+            <nav class="auth-panel" id="user-section" style="display: none;">
+                <span id="user-name" class="user-name"></span>
+                <button class="gs-btn-text" id="admin-btn" style="display: none;" onclick="showAdminPanel()">ADMIN</button>
+                <button class="gs-btn" onclick="logout()">LOGOUT</button>
+            </nav>
+        </div>
+    </header>
 
-    <header class="aero-header fixed-header aero-glass">
-            <div class="window-controls">
-                <span class="control minimize"></span>
-                <span class="control maximize"></span>
-                <span class="control close"></span>
-            </div>
-            <div style="display:flex; align-items:center; gap: 10px;">
-                <h1>NovaTours</h1>
-                <button class="aero-btn" onclick="toggleTheme()" style="padding: 2px 10px; font-size: 0.8em; margin-left: 10px;">🌙 Тема</button>
-            </div>
-            <div class="auth-panel" id="auth-section">
-                <button class="aero-btn" onclick="showLogin()">Вход</button>
-                <button class="aero-btn" onclick="showRegister()">Регистрация</button>
-            </div>
-            <div class="auth-panel" id="user-section" style="display: none;">
-                <span id="user-name" class="glow-text"></span>
-                <button class="aero-btn primary" id="admin-btn" style="display: none;" onclick="showAdminPanel()">Админка</button>
-                <button class="aero-btn" onclick="logout()">Выход</button>
-            </div>
-        </header>
-
-        <main id="main-content" style="padding-top: 60px;">
-            <div class="hero-section">
-                <div class="hero-content aero-glass">
-                    <h2 style="margin-top: 0; color: #fff; text-shadow: 0 0 5px #000;">Найти тур вашей мечты</h2>
-                    <div class="search-widget">
-                        <div class="search-row" style="display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
-                            <div class="search-group" style="flex: 1; min-width: 150px;">
-                                <label style="display: block; margin-bottom: 5px; color: #fff; font-weight: bold; text-shadow: 0 0 2px #000;">Откуда</label>
-                                <input type="text" id="search-origin" class="aero-input" placeholder="Город вылета" style="width: 100%;">
-                            </div>
-                            <div class="search-group" style="flex: 1; min-width: 150px;">
-                                <label style="display: block; margin-bottom: 5px; color: #fff; font-weight: bold; text-shadow: 0 0 2px #000;">Куда</label>
-                                <input type="text" id="search-destination" class="aero-input" placeholder="Курорт / Страна" style="width: 100%;">
-                            </div>
-                            <div class="search-group" style="flex: 1; min-width: 130px;">
-                                <label style="display: block; margin-bottom: 5px; color: #fff; font-weight: bold; text-shadow: 0 0 2px #000;">Дата вылета (от)</label>
-                                <input type="date" id="search-date" class="aero-input" style="width: 100%;">
-                            </div>
-                            <div class="search-group" style="flex: 0 1 80px;">
-                                <label style="display: block; margin-bottom: 5px; color: #fff; font-weight: bold; text-shadow: 0 0 2px #000;">Ночей</label>
-                                <input type="number" id="search-nights" class="aero-input" placeholder="Любое" style="width: 100%;">
-                            </div>
-                            <div class="search-group" style="flex: 0 1 80px;">
-                                <label style="display: block; margin-bottom: 5px; color: #fff; font-weight: bold; text-shadow: 0 0 2px #000;">Взрослые</label>
-                                <input type="number" id="search-adults" class="aero-input" value="2" min="1" style="width: 100%;">
-                            </div>
-                            <div class="search-group search-btn-group" style="flex: 1; min-width: 150px;">
-                                <button class="aero-btn primary" onclick="performAdvancedSearch()" style="width: 100%; height: 38px; font-weight: bold; font-size: 1.1em;">Искать туры</button>
-                            </div>
+    <main id="main-content">
+        <section class="hero-section slide-up">
+            <div class="hero-content">
+                <h2>EXPLORE THE WORLD.</h2>
+                <div class="search-widget">
+                    <div class="search-row">
+                        <div class="search-group">
+                            <label>ORIGIN</label>
+                            <input type="text" id="search-origin" class="gs-input" placeholder="City">
+                        </div>
+                        <div class="search-group">
+                            <label>DESTINATION</label>
+                            <input type="text" id="search-destination" class="gs-input" placeholder="Country / Resort">
+                        </div>
+                        <div class="search-group">
+                            <label>DEPARTURE</label>
+                            <input type="date" id="search-date" class="gs-input">
+                        </div>
+                        <div class="search-group small-group">
+                            <label>NIGHTS</label>
+                            <input type="number" id="search-nights" class="gs-input" placeholder="Any">
+                        </div>
+                        <div class="search-group small-group">
+                            <label>GUESTS</label>
+                            <input type="number" id="search-adults" class="gs-input" value="2" min="1">
+                        </div>
+                        <div class="search-group btn-group">
+                            <button class="gs-btn-primary" onclick="performAdvancedSearch()">SEARCH</button>
                         </div>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <div class="page-container" style="max-width: 1200px; margin: 0 auto; background: rgba(255, 255, 255, 0.85); padding-top: 20px; min-height: 100vh;">
-                <div class="content-with-sidebar" style="display: flex; padding: 0 20px 20px 20px; gap: 20px;">
-                    <aside class="sidebar aero-glass-light" style="width: 250px; padding: 15px; border-radius: 8px; flex-shrink: 0; align-self: flex-start;">
-                    <h3 style="margin-top:0;">Разделы</h3>
-                    <div class="tabs" style="display: flex; gap: 10px; flex-direction: column; margin-bottom: 20px;">
-                        <button class="aero-btn primary" id="tab-tours" onclick="switchTab('tours')" style="width:100%">Пакетные Туры</button>
-                        <button class="aero-btn" id="tab-properties" onclick="switchTab('properties')" style="width:100%">Недвижимость</button>
+        <section class="content-section">
+            <div class="page-container">
+                <aside class="sidebar slide-up" style="animation-delay: 0.1s;">
+                    <h3>CATEGORIES</h3>
+                    <div class="tabs">
+                        <button class="gs-tab active" id="tab-tours" onclick="switchTab('tours')">Package Tours</button>
+                        <button class="gs-tab" id="tab-properties" onclick="switchTab('properties')">Properties</button>
                     </div>
 
-                    <h3 style="margin-top:0; padding-top: 15px; border-top: 1px solid rgba(128,128,128,0.3);">Уточнить поиск</h3>
-                    <div class="filter-group" style="margin-bottom: 15px;">
-                        <label style="display:block; margin-bottom:5px;">Звездность отеля от:</label>
-                        <select id="filter-stars" class="aero-input" onchange="performAdvancedSearch()" style="width:100%">
-                            <option value="">Любая</option>
-                            <option value="3">3* и выше</option>
-                            <option value="4">4* и выше</option>
-                            <option value="5">5*</option>
-                        </select>
-                    </div>
-                    <div class="filter-group" style="margin-bottom: 15px;">
-                        <label style="display:block; margin-bottom:5px;">Питание:</label>
-                        <select id="filter-board" class="aero-input" onchange="performAdvancedSearch()" style="width:100%">
-                            <option value="">Любое</option>
-                            <option value="AI">Всё включено (AI/UAI)</option>
-                            <option value="BB">Завтраки (BB)</option>
-                            <option value="HB">Завтрак+Ужин (HB)</option>
-                            <option value="RO">Без питания (RO)</option>
+                    <h3 class="mt-20">FILTERS</h3>
+                    <div class="filter-group">
+                        <label>MIN. STARS</label>
+                        <select id="filter-stars" class="gs-input" onchange="performAdvancedSearch()">
+                            <option value="">Any</option>
+                            <option value="3">3* and above</option>
+                            <option value="4">4* and above</option>
+                            <option value="5">5* only</option>
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label style="display:block; margin-bottom:5px;">Поиск по названию:</label>
-                        <input type="text" id="countryFilter" class="aero-input" placeholder="Отель или страна..." oninput="filterAll()" style="width:100%">
+                        <label>BOARD</label>
+                        <select id="filter-board" class="gs-input" onchange="performAdvancedSearch()">
+                            <option value="">Any</option>
+                            <option value="AI">All Inclusive</option>
+                            <option value="BB">Bed & Breakfast</option>
+                            <option value="HB">Half Board</option>
+                            <option value="RO">Room Only</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>SEARCH</label>
+                        <input type="text" id="countryFilter" class="gs-input" placeholder="Keywords..." oninput="filterAll()">
                     </div>
                 </aside>
 
-                <div class="main-results" style="flex: 1;">
+                <div class="main-results">
                     <div id="tours-container" class="tours-grid list-view">
-                        <!-- Туры будут загружены сюда -->
+                        <!-- Tours injected here -->
                     </div>
                     
-                    <div id="properties-container" class="tours-grid" style="display: none;">
-                        <!-- Недвижимость будет загружена сюда -->
+                    <div id="properties-container" class="tours-grid list-view" style="display: none;">
+                        <!-- Properties injected here -->
                     </div>
                 </div>
             </div>
-        </main>
-        
-        <main id="admin-content" style="display: none; padding-top: 60px; max-width: 1200px; margin: 0 auto; background: rgba(255, 255, 255, 0.85); min-height: 100vh;">
-            <div class="toolbar aero-glass-light">
-                <h2>Панель Администратора</h2>
-                <button class="aero-btn" onclick="hideAdminPanel()">Назад в каталог</button>
+        </section>
+    </main>
+    
+    <main id="admin-content" style="display: none;" class="fade-in">
+        <div class="page-container" style="flex-direction: column;">
+            <div class="toolbar">
+                <h2>ADMINISTRATOR DASHBOARD</h2>
+                <button class="gs-btn-text" onclick="hideAdminPanel()">← BACK</button>
             </div>
             <div class="admin-panel">
-                <h3>Зарегистрированные пользователи и заказы</h3>
                 <div id="admin-users-container">
-                    <!-- Таблица юзеров -->
+                    <!-- Admin tables -->
                 </div>
             </div>
-        </main>
+        </div>
+    </main>
 
-        <footer class="aero-footer" style="position: relative; z-index: 10;">
-            <p>NovaTours © 2007 - 2026. Vaporwave & Synthwave Edition.</p>
-        </footer>
+    <footer class="gs-footer">
+        <p>NOVATOURS © 2026. GRAYSCALE EDITION.</p>
+    </footer>
 
-    <!-- Модальное окно Входа (Aero Glass) -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content aero-glass">
-            <div class="modal-header">
-                <div class="window-controls">
-                    <div class="control close" onclick="closeModals()" style="cursor:pointer;"></div>
-                    <div class="control minimize"></div>
-                    <div class="control maximize"></div>
-                </div>
-                <h2>Вход в систему</h2>
+    <!-- Modals -->
+    <div id="loginModal" class="gs-modal">
+        <div class="gs-modal-content slide-up">
+            <div class="gs-modal-header">
+                <h2>LOG IN</h2>
+                <span class="close-modal" onclick="closeModals()">✕</span>
             </div>
-            <div class="modal-body">
-                <input type="email" id="loginEmail" class="aero-input" placeholder="Email">
-                <input type="password" id="loginPassword" class="aero-input" placeholder="Пароль">
-                <div class="modal-actions">
-                    <button class="aero-btn primary" onclick="login()">Войти</button>
+            <div class="gs-modal-body">
+                <input type="email" id="loginEmail" class="gs-input" placeholder="Email">
+                <input type="password" id="loginPassword" class="gs-input" placeholder="Password">
+                <div class="gs-modal-actions">
+                    <button class="gs-btn-primary" onclick="login()">CONTINUE</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Модальное окно Регистрации (Aero Glass) -->
-    <div id="registerModal" class="modal">
-        <div class="modal-content aero-glass">
-            <div class="modal-header">
-                <div class="window-controls">
-                    <div class="control close" onclick="closeModals()" style="cursor:pointer;"></div>
-                    <div class="control minimize"></div>
-                    <div class="control maximize"></div>
-                </div>
-                <h2>Регистрация</h2>
+    <div id="registerModal" class="gs-modal">
+        <div class="gs-modal-content slide-up">
+            <div class="gs-modal-header">
+                <h2>CREATE ACCOUNT</h2>
+                <span class="close-modal" onclick="closeModals()">✕</span>
             </div>
-            <div class="modal-body">
-                <input type="text" id="regName" class="aero-input" placeholder="ФИО">
-                <input type="email" id="regEmail" class="aero-input" placeholder="Email">
-                <input type="password" id="regPassword" class="aero-input" placeholder="Пароль">
-                <div class="modal-actions">
-                    <button class="aero-btn primary" onclick="register()">Зарегистрироваться</button>
+            <div class="gs-modal-body">
+                <input type="text" id="regName" class="gs-input" placeholder="Full Name">
+                <input type="email" id="regEmail" class="gs-input" placeholder="Email">
+                <input type="password" id="regPassword" class="gs-input" placeholder="Password">
+                <div class="gs-modal-actions">
+                    <button class="gs-btn-primary" onclick="register()">REGISTER</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Стилизованное окно необходимости регистрации -->
-    <div id="authRequiredModal" class="modal">
-        <div class="modal-content aero-glass">
-            <div class="modal-header">
-                <div class="window-controls">
-                    <div class="control close" onclick="closeModals()" style="cursor:pointer;"></div>
-                    <div class="control minimize"></div>
-                    <div class="control maximize"></div>
-                </div>
-                <h2>Внимание</h2>
+    <div id="authRequiredModal" class="gs-modal">
+        <div class="gs-modal-content slide-up">
+            <div class="gs-modal-header">
+                <h2>AUTHENTICATION REQUIRED</h2>
+                <span class="close-modal" onclick="closeModals()">✕</span>
             </div>
-            <div class="modal-body" style="text-align: center;">
-                <p>Для бронирования тура вам необходимо войти в систему или зарегистрироваться!</p>
-                <div class="modal-actions" style="justify-content: center; gap: 10px; margin-top: 20px;">
-                    <button class="aero-btn primary" onclick="closeModals(); showLogin();">Войти</button>
-                    <button class="aero-btn" onclick="closeModals(); showRegister();">Регистрация</button>
+            <div class="gs-modal-body text-center">
+                <p>Please log in or create an account to proceed with booking.</p>
+                <div class="gs-modal-actions center-actions mt-20">
+                    <button class="gs-btn-primary" onclick="closeModals(); showLogin();">LOG IN</button>
+                    <button class="gs-btn" onclick="closeModals(); showRegister();">SIGN UP</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Модальное окно Бронирования -->
-    <div id="bookingModal" class="modal">
-        <div class="modal-content aero-glass" style="width: 400px;">
-            <div class="modal-header">
-                <div class="window-controls">
-                    <div class="control close" onclick="closeModals()" style="cursor:pointer;"></div>
-                    <div class="control minimize"></div>
-                    <div class="control maximize"></div>
-                </div>
-                <h2>Оформление бронирования</h2>
+    <div id="bookingModal" class="gs-modal">
+        <div class="gs-modal-content slide-up">
+            <div class="gs-modal-header">
+                <h2>CHECKOUT</h2>
+                <span class="close-modal" onclick="closeModals()">✕</span>
             </div>
-            <div class="modal-body">
-                <h3 id="book-tour-title" style="margin-top:0; color:#1a5b82;"></h3>
-                <p>Базовая цена: <strong id="book-tour-price"></strong></p>
-                <label for="book-people">Количество человек:</label>
-                <input type="number" id="book-people" class="aero-input" value="1" min="1" oninput="updateBookingPrice()">
+            <div class="gs-modal-body">
+                <h3 id="book-tour-title" class="checkout-title"></h3>
+                <p class="checkout-detail">Base Price: <strong id="book-tour-price"></strong></p>
+                <label>GUESTS</label>
+                <input type="number" id="book-people" class="gs-input" value="1" min="1" oninput="updateBookingPrice()">
                 
-                <div style="margin-top: 15px; font-size: 1.2em; border-top: 1px solid #ccc; padding-top: 10px;">
-                    Итого к оплате: <strong id="book-total-price" style="color: #2e8b57;"></strong>
+                <div class="checkout-total">
+                    TOTAL: <strong id="book-total-price"></strong>
                 </div>
 
-                <div class="modal-actions">
-                    <button class="aero-btn primary" onclick="confirmBooking()">Подтвердить бронь</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Модальное окно Бронирования Недвижимости -->
-    <div id="propertyBookingModal" class="modal">
-        <div class="modal-content aero-glass" style="width: 400px;">
-            <div class="modal-header">
-                <div class="window-controls">
-                    <div class="control close" onclick="closeModals()" style="cursor:pointer;"></div>
-                    <div class="control minimize"></div>
-                    <div class="control maximize"></div>
-                </div>
-                <h2>Аренда недвижимости</h2>
-            </div>
-            <div class="modal-body">
-                <h3 id="book-prop-title" style="margin-top:0; color:#1a5b82;"></h3>
-                <p>Цена за ночь: <strong id="book-prop-price"></strong></p>
-                
-                <label for="prop-start-date">Дата заезда:</label>
-                <input type="date" id="prop-start-date" class="aero-input" oninput="updatePropBookingPrice()">
-                
-                <label for="prop-end-date" style="margin-top: 10px;">Дата выезда:</label>
-                <input type="date" id="prop-end-date" class="aero-input" oninput="updatePropBookingPrice()">
-
-                <label for="prop-people" style="margin-top: 10px;">Количество человек:</label>
-                <input type="number" id="prop-people" class="aero-input" value="1" min="1" oninput="updatePropBookingPrice()">
-                
-                <div style="margin-top: 15px; font-size: 1.2em; border-top: 1px solid #ccc; padding-top: 10px;">
-                    Итого к оплате: <strong id="prop-total-price" style="color: #2e8b57;">$0.00</strong>
-                </div>
-
-                <div class="modal-actions">
-                    <button class="aero-btn primary" onclick="confirmPropertyBooking()">Подтвердить бронь</button>
+                <div class="gs-modal-actions">
+                    <button class="gs-btn-primary" onclick="confirmBooking()">CONFIRM BOOKING</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="/frontend/script.js?v=12"></script>
+    <div id="propertyBookingModal" class="gs-modal">
+        <div class="gs-modal-content slide-up">
+            <div class="gs-modal-header">
+                <h2>RENT PROPERTY</h2>
+                <span class="close-modal" onclick="closeModals()">✕</span>
+            </div>
+            <div class="gs-modal-body">
+                <h3 id="book-prop-title" class="checkout-title"></h3>
+                <p class="checkout-detail">Price per night: <strong id="book-prop-price"></strong></p>
+                
+                <label>CHECK-IN</label>
+                <input type="date" id="prop-start-date" class="gs-input" oninput="updatePropBookingPrice()">
+                
+                <label class="mt-10">CHECK-OUT</label>
+                <input type="date" id="prop-end-date" class="gs-input" oninput="updatePropBookingPrice()">
+
+                <label class="mt-10">GUESTS</label>
+                <input type="number" id="prop-people" class="gs-input" value="1" min="1" oninput="updatePropBookingPrice()">
+                
+                <div class="checkout-total">
+                    TOTAL: <strong id="prop-total-price">$0.00</strong>
+                </div>
+
+                <div class="gs-modal-actions">
+                    <button class="gs-btn-primary" onclick="confirmPropertyBooking()">CONFIRM BOOKING</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/frontend/script.js?v=13"></script>
 </body>
 </html>
